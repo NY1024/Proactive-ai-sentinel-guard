@@ -1,0 +1,1226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>主动服务 · 安全守门人</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1418;
+      --bg-2: #0f1b22;
+      --ink: #f3f7f8;
+      --muted: #b9c3c7;
+      --accent: #24d19c;
+      --accent-2: #ffb347;
+      --danger: #ff6b6b;
+      --line: rgba(255, 255, 255, 0.08);
+      --card: rgba(255, 255, 255, 0.05);
+      --glow: 0 0 40px rgba(36, 209, 156, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Noto Serif SC", serif;
+      background: radial-gradient(1200px 800px at 80% -10%, rgba(36, 209, 156, 0.18), transparent),
+        radial-gradient(900px 700px at -10% 10%, rgba(255, 179, 71, 0.18), transparent),
+        linear-gradient(160deg, #0b1216 0%, #101e25 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 32px;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .brand .dot {
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: var(--glow);
+    }
+
+    h1 {
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    h1 span {
+      color: var(--accent-2);
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button, .chip {
+      font-family: "Space Grotesk", sans-serif;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      padding: 10px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      border-color: var(--accent);
+      box-shadow: var(--glow);
+      transform: translateY(-1px);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .panel h2 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .panel p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .metric:last-child {
+      border-bottom: none;
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-family: "Space Grotesk", sans-serif;
+      background: rgba(36, 209, 156, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(36, 209, 156, 0.3);
+    }
+
+    .tag.warn {
+      background: rgba(255, 179, 71, 0.15);
+      color: var(--accent-2);
+      border-color: rgba(255, 179, 71, 0.3);
+    }
+
+    .tag.danger {
+      background: rgba(255, 107, 107, 0.18);
+      color: var(--danger);
+      border-color: rgba(255, 107, 107, 0.3);
+    }
+
+    .simulator {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(6, 10, 12, 0.5);
+      color: var(--ink);
+      font-family: "Noto Serif SC", serif;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .pill.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: var(--glow);
+    }
+
+    .output {
+      display: grid;
+      gap: 14px;
+    }
+
+    .alert-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .pulse {
+      position: relative;
+    }
+
+    .pulse::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 16px;
+      border: 1px solid rgba(36, 209, 156, 0.4);
+      opacity: 0;
+      animation: pulse 2.6s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0; transform: scale(0.98); }
+      40% { opacity: 0.6; transform: scale(1.01); }
+      100% { opacity: 0; transform: scale(1.03); }
+    }
+
+    .alert-card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .alert-card p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .timeline-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 6px;
+    }
+
+    .timeline-item p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 60px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .stream {
+      display: grid;
+      gap: 10px;
+      max-height: 220px;
+      overflow: auto;
+      padding-right: 8px;
+    }
+
+    .stream-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .stream-item strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(36, 209, 156, 0.8), rgba(255, 179, 71, 0.8));
+    }
+
+    .mini-chart {
+      width: 100%;
+      height: 160px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px;
+    }
+
+    .align-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--line);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .align-row:last-child {
+      border-bottom: none;
+    }
+
+    .align-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: var(--glow);
+    }
+
+    @media (max-width: 900px) {
+      header {
+        grid-template-columns: 1fr;
+      }
+      .simulator {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="brand"><span class="dot"></span> Sentinel Guard</div>
+        <h1>主动服务「安全守门人」<br />让敏感操作 <span>先被拦、再被理解</span></h1>
+        <p class="subtitle">
+          面向办公场景的主动式 AI 守护方案：在用户还没真正触发风险之前，系统已经完成场景感知、风险预判、触达策略与解释交付。
+          该原型聚焦“低打扰 + 高安全 + 可控体验”，支持离线规则与轻量模型混合。
+        </p>
+        <div class="cta-row">
+          <button id="btnRun">运行一次主动预判</button>
+          <button id="btnAi">调用 LLM 评估</button>
+          <button id="btnReset">重置场景</button>
+        </div>
+        <div style="margin-top: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <label style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Grotesk', sans-serif; font-size: 13px; color: var(--muted);">
+            <input id="autoCheck" type="checkbox" checked />
+            主动巡检 Auto-Scan（每 6 秒）
+          </label>
+          <span id="lastScan" style="font-size: 12px; color: var(--muted);">上次巡检：--</span>
+        </div>
+        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;" id="engineRow">
+          <div class="pill active" data-value="rule">规则模拟模式</div>
+          <div class="pill" data-value="llm">LLM 驱动模式</div>
+        </div>
+        <div class="panel" style="margin-top: 12px; padding: 14px;">
+          <div class="form-group">
+            <label>LLM Endpoint / API Key（可选）</label>
+            <input id="baseUrlInput" placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1" />
+          </div>
+          <div class="form-group">
+            <input id="apiKeyInput" type="password" placeholder="API Key (可选)" />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <input id="modelInput" placeholder="qwen3.6-flash-2026-04-16" />
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>主动服务目标</h2>
+        <div class="metric">
+          <span>用户粘性</span>
+          <span class="tag">+18% 预期提升</span>
+        </div>
+        <div class="metric">
+          <span>满意度</span>
+          <span class="tag">解释型干预</span>
+        </div>
+        <div class="metric">
+          <span>留存与转化</span>
+          <span class="tag warn">风险操作减少 35%</span>
+        </div>
+        <div class="metric">
+          <span>隐私控制</span>
+          <span class="tag">用户可调节</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="grid grid-3">
+      <div class="panel">
+        <h2>1. 需求预判模型</h2>
+        <p>融合上下文信号、历史行为、数据敏感度、业务流程阶段，推断用户即将触发的高风险动作。</p>
+      </div>
+      <div class="panel">
+        <h2>2. 主动触达策略</h2>
+        <p>基于风险等级与用户打扰阈值，选择拦截、提醒、二次确认或静默记录的策略。</p>
+      </div>
+      <div class="panel">
+        <h2>3. 体验与隐私</h2>
+        <p>用户可手动调整“主动提醒频率”，支持透明解释、可回溯记录与一键关闭。</p>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top: 28px;">
+      <h2>办公场景主动服务模拟器</h2>
+      <div class="simulator" style="margin-top: 16px;">
+        <div>
+          <div class="form-group">
+            <label>场景类型</label>
+            <select id="sceneType">
+              <option value="email">对外邮件发送</option>
+              <option value="share">共享内部文档</option>
+              <option value="expense">报销与采购</option>
+              <option value="contract">供应商合同审批</option>
+              <option value="code">代码片段分享</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>关键上下文</label>
+            <textarea id="contextInput">准备向外部合作方发送报价单，附件包含内部成本表。</textarea>
+          </div>
+          <div class="form-group">
+            <label>数据敏感度</label>
+            <div class="pill-row" id="sensitivityRow">
+              <div class="pill active" data-value="low">低</div>
+              <div class="pill" data-value="medium">中</div>
+              <div class="pill" data-value="high">高</div>
+              <div class="pill" data-value="top">机密</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>风险信号</label>
+            <div class="pill-row" id="signalRow">
+              <div class="pill active" data-value="external">外部收件人</div>
+              <div class="pill" data-value="afterhours">非工作时段</div>
+              <div class="pill" data-value="mass">群发</div>
+              <div class="pill" data-value="finance">涉及财务</div>
+              <div class="pill" data-value="pii">疑似个人信息</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>用户打扰阈值</label>
+            <input id="interruptLevel" type="range" min="1" max="5" value="3" />
+          </div>
+          <div class="form-group">
+            <label>用户授权</label>
+            <div class="pill-row" id="consentRow">
+              <div class="pill active" data-value="auto">自动判断</div>
+              <div class="pill" data-value="manual">仅提示不拦截</div>
+              <div class="pill" data-value="silent">静默记录</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="output">
+          <div class="alert-card pulse" id="proactiveFeed">
+            <h3>主动触发窗口 <span class="tag">预测中</span></h3>
+            <p>系统正在根据上下文与记忆权重，预测用户下一步操作。</p>
+          </div>
+          <div class="alert-card" id="modelStatus">
+            <h3>模型状态 <span class="tag">运行中</span></h3>
+            <p>风险分数 62 · 置信度 0.83 · 下一步动作：事前提醒</p>
+          </div>
+          <div class="alert-card" id="riskSummary">
+            <h3>预判结果 <span class="tag warn">中风险</span></h3>
+            <p>系统识别到外部发送 + 附件成本信息，建议触发「事前提醒 + 附件脱敏建议」。</p>
+          </div>
+          <div class="alert-card" id="actionPanel">
+            <h3>主动触达 <span class="tag">建议触发</span></h3>
+            <p>对用户展示 2 条解释型提示，并给出可一键执行的替代方案。</p>
+          </div>
+          <div class="alert-card">
+            <h3>建议动作 <span class="tag">3 条</span></h3>
+            <div class="timeline" id="suggestionList">
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <p>提示：附件包含成本列，建议发送简化报价单版本。</p>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <p>提示：外部收件人未在白名单，是否升级为“只读”权限？</p>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <p>记录：本次操作已写入安全日志，可随时回溯。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-2" style="margin-top: 28px;">
+      <div class="panel">
+        <h2>主动服务闭环</h2>
+        <div class="timeline" id="loopFlow">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <p>感知：整合日程、最近操作、敏感级别标签。</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <p>预判：多源信号融合，输出风险评分与触达建议。</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <p>触达：按用户阈值进行提醒 / 拦截 / 静默记录。</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <p>反馈：用户反馈回流，优化风险阈值与触达策略。</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>安全与隐私机制</h2>
+        <div class="metric">
+          <span>最小化采集</span>
+          <span class="tag">仅关键字段</span>
+        </div>
+        <div class="metric">
+          <span>透明解释</span>
+          <span class="tag">可追溯</span>
+        </div>
+        <div class="metric">
+          <span>用户控制</span>
+          <span class="tag warn">一键关闭</span>
+        </div>
+        <div class="metric">
+          <span>安全审计</span>
+          <span class="tag">合规日志</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top: 28px;">
+      <h2>场景库（可切换）</h2>
+      <div class="grid grid-3" style="margin-top: 16px;" id="scenarioCards">
+        <div class="alert-card">
+          <h3>对外邮件发送 <span class="tag warn">常见风险</span></h3>
+          <p>自动识别外部域名、附件敏感信息，提前提醒“替换版本”。</p>
+        </div>
+        <div class="alert-card">
+          <h3>共享内部文档 <span class="tag">权限检查</span></h3>
+          <p>主动标记“可编辑 / 可下载 / 仅阅读”级别，并阻断异常分享。</p>
+        </div>
+        <div class="alert-card">
+          <h3>报销与采购 <span class="tag danger">高风险</span></h3>
+          <p>对金额异常、供应商黑名单、重复报销行为提前提醒。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-2" style="margin-top: 28px;">
+      <div class="panel">
+        <h2>实时主动感知流 Live Signals</h2>
+        <div class="stream" id="streamList"></div>
+      </div>
+      <div class="panel">
+        <h2>决策轨迹 Decision Trace</h2>
+        <div class="stream" id="traceList"></div>
+      </div>
+    </section>
+
+    <section class="grid grid-3" style="margin-top: 28px;">
+      <div class="panel">
+        <h2>可解释权重面板 Explainable Weights</h2>
+        <div id="weightPanel"></div>
+      </div>
+      <div class="panel">
+        <h2>策略学习曲线 Policy Learning Curve</h2>
+        <canvas class="mini-chart" id="learningChart"></canvas>
+      </div>
+      <div class="panel">
+        <h2>记忆对齐图 Memory Alignment</h2>
+        <div id="memoryAlign"></div>
+      </div>
+    </section>
+
+    <div class="footer">
+      © 2026 主动式 AI 安全守门人原型 · 中文为主 / English for technical hints
+    </div>
+  </div>
+
+  <script>
+    const sensitivityRow = document.getElementById("sensitivityRow");
+    const signalRow = document.getElementById("signalRow");
+    const consentRow = document.getElementById("consentRow");
+    const btnRun = document.getElementById("btnRun");
+    const btnAi = document.getElementById("btnAi");
+    const btnReset = document.getElementById("btnReset");
+    const autoCheck = document.getElementById("autoCheck");
+    const lastScan = document.getElementById("lastScan");
+    const proactiveFeed = document.getElementById("proactiveFeed");
+    const modelStatus = document.getElementById("modelStatus");
+    const streamList = document.getElementById("streamList");
+    const traceList = document.getElementById("traceList");
+    const weightPanel = document.getElementById("weightPanel");
+    const learningChart = document.getElementById("learningChart");
+    const memoryAlign = document.getElementById("memoryAlign");
+    const engineRow = document.getElementById("engineRow");
+    const baseUrlInput = document.getElementById("baseUrlInput");
+    const apiKeyInput = document.getElementById("apiKeyInput");
+    const modelInput = document.getElementById("modelInput");
+
+    const sceneType = document.getElementById("sceneType");
+    const contextInput = document.getElementById("contextInput");
+    const interruptLevel = document.getElementById("interruptLevel");
+
+    const riskSummary = document.getElementById("riskSummary");
+    const actionPanel = document.getElementById("actionPanel");
+    const suggestionList = document.getElementById("suggestionList");
+
+    const scenarioPresets = {
+      email: {
+        context: "准备向外部合作方发送报价单，附件包含内部成本表。",
+        signals: ["external", "finance"],
+        sensitivity: "medium",
+      },
+      share: {
+        context: "计划共享季度销售预测表给新入职同事。",
+        signals: ["mass"],
+        sensitivity: "high",
+      },
+      expense: {
+        context: "供应商提交报销，金额略高于平均水平。",
+        signals: ["finance", "afterhours"],
+        sensitivity: "high",
+      },
+      contract: {
+        context: "准备签署供应商合同，对方要求附上内部价格策略。",
+        signals: ["external", "pii"],
+        sensitivity: "top",
+      },
+      code: {
+        context: "要把内部 API 调用示例发到外部论坛求助。",
+        signals: ["external"],
+        sensitivity: "medium",
+      }
+    };
+
+    function toggleActive(row, pill) {
+      const isMulti = row.id === "signalRow";
+      if (!isMulti) {
+        row.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        return;
+      }
+      pill.classList.toggle("active");
+    }
+
+    function getSelectedValue(row) {
+      const active = row.querySelector(".pill.active");
+      return active ? active.dataset.value : null;
+    }
+
+    function getSelectedSignals() {
+      return Array.from(signalRow.querySelectorAll(".pill.active")).map(p => p.dataset.value);
+    }
+
+    function calcRiskScore({ sensitivity, signals }) {
+      const base = { low: 10, medium: 30, high: 55, top: 80 }[sensitivity] || 20;
+      const signalMap = {
+        external: 18,
+        afterhours: 10,
+        mass: 12,
+        finance: 16,
+        pii: 20,
+      };
+      const signalScore = signals.reduce((sum, s) => sum + (signalMap[s] || 0), 0);
+      return Math.min(100, base + signalScore);
+    }
+
+    function riskLabel(score) {
+      if (score >= 75) return { label: "高风险", tag: "danger" };
+      if (score >= 50) return { label: "中风险", tag: "warn" };
+      return { label: "低风险", tag: "" };
+    }
+
+    function buildSuggestions(scene, sensitivity, signals) {
+      const list = [];
+      if (signals.includes("external")) {
+        list.push("检测到外部收件人，建议确认白名单或开启只读分享。");
+      }
+      if (signals.includes("finance")) {
+        list.push("涉及财务信息，建议启用敏感字段遮罩版本。");
+      }
+      if (signals.includes("pii")) {
+        list.push("识别到可能的个人信息字段，建议移除或脱敏。");
+      }
+      if (signals.includes("afterhours")) {
+        list.push("非工作时段触发，建议延迟发送并二次确认。");
+      }
+      if (signals.includes("mass")) {
+        list.push("群发行为检测，建议分组发送并记录接收范围。");
+      }
+      if (list.length === 0) {
+        list.push("当前信号稳定，可进入静默审计模式。");
+      }
+
+      if (scene === "contract") {
+        list.push("合同场景可触发法务协同提醒，避免条款遗漏。");
+      }
+      if (scene === "code") {
+        list.push("建议移除内部域名或密钥字段后再对外发布。");
+      }
+      if (sensitivity === "top") {
+        list.push("机密级数据建议强制审批或仅内部流转。");
+      }
+
+      return list.slice(0, 3);
+    }
+
+    const proactiveEvents = [
+      "发现日历在 30 分钟后有外部沟通会议，预判用户将发送会议材料。",
+      "检测到你刚打开“预算表”文件，可能会尝试外发或共享。",
+      "上周相似场景触发过脱敏建议，优先给出替代方案。",
+      "最近 3 次对外发送均包含附件，建议预加载脱敏版本。",
+      "检测到收件人域名不在白名单，准备进行事前提醒。"
+    ];
+
+    const signalPool = [
+      "打开了敏感文件：Q3-成本明细.xlsx",
+      "检测到外部域名：partner.com",
+      "文件准备拖入附件区域",
+      "用户复制了内部定价字段",
+      "访问了采购审批页面",
+      "切换到外发邮件窗口",
+      "上次操作被标记为高风险",
+      "离开办公网络，切换到个人热点",
+      "尝试生成共享链接（可编辑）",
+      "识别到疑似身份证字段"
+    ];
+
+    const tracePool = [
+      "规则触发：外部域名 + 附件 → 风险 +18",
+      "记忆匹配：相似场景 2 次被提醒 → 风险 +8",
+      "策略选择：打扰阈值 3 → 触发“事前提醒”",
+      "解释生成：附加替代方案与可回溯记录",
+      "隐私策略：不保存正文，仅保存信号摘要"
+    ];
+
+    const weightPool = [
+      { key: "外部收件人", base: 0.32 },
+      { key: "敏感度等级", base: 0.28 },
+      { key: "历史相似场景", base: 0.18 },
+      { key: "时间段异常", base: 0.12 },
+      { key: "用户阈值", base: 0.10 }
+    ];
+
+    const memoryPool = [
+      "上次外发成本表被拦截",
+      "用户偏好：低打扰",
+      "合作方域名白名单未录入",
+      "曾启用过脱敏附件",
+      "类似合同场景触发过法务协同"
+    ];
+
+    const learningData = [42, 50, 56, 61, 66, 70, 74, 78, 81, 83];
+    let engineMode = "rule";
+    let lastAiCall = 0;
+
+    function formatTime(date) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    }
+
+    function updateProactiveFeed(score) {
+      const event = proactiveEvents[Math.floor(Math.random() * proactiveEvents.length)];
+      const tag = score >= 75 ? "tag danger" : score >= 50 ? "tag warn" : "tag";
+      proactiveFeed.innerHTML = `
+        <h3>主动触发窗口 <span class="${tag}">预测中</span></h3>
+        <p>${event}</p>
+      `;
+    }
+
+    function updateModelStatus(score, confidence, decision) {
+      const tag = score >= 75 ? "tag danger" : score >= 50 ? "tag warn" : "tag";
+      modelStatus.innerHTML = `
+        <h3>模型状态 <span class="${tag}">运行中</span></h3>
+        <p>风险分数 ${score} · 置信度 ${confidence.toFixed(2)} · 下一步动作：${decision}</p>
+      `;
+    }
+
+    function updateWeightPanel(score) {
+      const jitter = () => (Math.random() * 0.06) - 0.03;
+      const weights = weightPool.map(item => ({
+        key: item.key,
+        value: Math.max(0.05, item.base + jitter())
+      }));
+      const total = weights.reduce((sum, w) => sum + w.value, 0);
+      const normalized = weights.map(w => ({
+        key: w.key,
+        value: w.value / total
+      }));
+      weightPanel.innerHTML = normalized.map(w => {
+        const percent = Math.round(w.value * 100);
+        return `
+          <div class="bar-row">
+            <span>${w.key}</span>
+            <div class="bar"><span style="width:${percent}%"></span></div>
+            <span>${percent}%</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function updateMemoryAlign() {
+      const picked = memoryPool
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+      memoryAlign.innerHTML = picked.map(item => `
+        <div class="align-row">
+          <span>${item}</span>
+          <span class="align-dot"></span>
+        </div>
+      `).join("");
+    }
+
+    function drawLearningChart() {
+      const ctx = learningChart.getContext("2d");
+      const width = learningChart.width = learningChart.clientWidth;
+      const height = learningChart.height = learningChart.clientHeight;
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 4; i++) {
+        const y = (height / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      const points = learningData.map((v, i) => ({
+        x: (width / (learningData.length - 1)) * i,
+        y: height - (v / 100) * height
+      }));
+
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(36, 209, 156, 0.9)";
+      ctx.lineWidth = 2;
+      points.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255, 179, 71, 0.9)";
+      points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    function appendStream(list, text) {
+      const item = document.createElement("div");
+      item.className = "stream-item";
+      item.innerHTML = text;
+      list.prepend(item);
+      while (list.children.length > 6) {
+        list.removeChild(list.lastChild);
+      }
+    }
+
+    function tickLiveSignals() {
+      const signal = signalPool[Math.floor(Math.random() * signalPool.length)];
+      appendStream(streamList, `<strong>感知</strong> · ${signal}`);
+    }
+
+    function tickTrace(decision) {
+      const trace = tracePool[Math.floor(Math.random() * tracePool.length)];
+      appendStream(traceList, `<strong>决策</strong> · ${trace}（结果：${decision}）`);
+    }
+
+    function updateUI(triggeredByAuto = false) {
+      const sensitivity = getSelectedValue(sensitivityRow);
+      const signals = getSelectedSignals();
+      const consent = getSelectedValue(consentRow);
+      const score = calcRiskScore({ sensitivity, signals });
+      const risk = riskLabel(score);
+      const interrupt = Number(interruptLevel.value);
+      const confidence = Math.min(0.95, 0.65 + score / 200 + (signals.length * 0.03));
+
+      const riskTagClass = risk.tag ? `tag ${risk.tag}` : "tag";
+      riskSummary.innerHTML = `
+        <h3>预判结果 <span class="${riskTagClass}">${risk.label} · ${score}</span></h3>
+        <p>结合当前上下文与历史行为，系统预判为 <strong>${risk.label}</strong> 场景。打扰阈值为 ${interrupt}，触达方式已自动适配。</p>
+      `;
+
+      const actionMap = {
+        auto: "自动拦截高风险、提醒中风险，低风险进入静默记录。",
+        manual: "仅提供提醒，不自动拦截；保留操作权给用户。",
+        silent: "只做审计与回溯，不主动干预当前操作。",
+      };
+      const decisionMap = {
+        auto: score >= 75 ? "强拦截" : score >= 50 ? "事前提醒" : "静默记录",
+        manual: "柔性提示",
+        silent: "静默记录",
+      };
+      const actionTag = consent === "silent" ? "tag" : consent === "manual" ? "tag warn" : "tag";
+      const actionText = actionMap[consent] || actionMap.auto;
+      const decision = decisionMap[consent] || decisionMap.auto;
+
+      actionPanel.innerHTML = `
+        <h3>主动触达 <span class="${actionTag}">${consent === "auto" ? "建议触发" : consent === "manual" ? "柔性提示" : "静默记录"}</span></h3>
+        <p>${actionText}</p>
+      `;
+
+      const suggestions = buildSuggestions(sceneType.value, sensitivity, signals);
+      suggestionList.innerHTML = suggestions.map(text => `
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <p>${text}</p>
+        </div>
+      `).join("");
+
+      updateProactiveFeed(score);
+      updateModelStatus(score, confidence, decision);
+      updateWeightPanel(score);
+      updateMemoryAlign();
+      drawLearningChart();
+
+      if (triggeredByAuto) {
+        lastScan.textContent = `上次巡检：${formatTime(new Date())}`;
+        tickLiveSignals();
+        tickTrace(decision);
+      }
+    }
+
+    async function runAiAssessment(triggeredByAuto = false) {
+      const now = Date.now();
+      if (triggeredByAuto && now - lastAiCall < 8000) {
+        return;
+      }
+      lastAiCall = now;
+      if (location.protocol === "file:") {
+        appendStream(traceList, "<strong>LLM</strong> · 本地文件模式无法调用接口，请通过 server.py 启动");
+        return;
+      }
+      const payload = {
+        sceneType: sceneType.value,
+        context: contextInput.value.trim(),
+        sensitivity: getSelectedValue(sensitivityRow),
+        signals: getSelectedSignals(),
+        interruptLevel: Number(interruptLevel.value),
+        consent: getSelectedValue(consentRow),
+        baseUrl: baseUrlInput.value.trim() || undefined,
+        apiKey: apiKeyInput.value.trim() || undefined,
+        model: modelInput.value.trim() || undefined,
+      };
+
+      btnAi.disabled = true;
+      btnAi.textContent = "LLM 评估中...";
+      try {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "LLM error");
+        }
+        const data = await res.json();
+
+        const riskTagClass = data.risk_label === "高风险" ? "tag danger" : data.risk_label === "中风险" ? "tag warn" : "tag";
+        const rationaleText = data.rationale ? `解释：${data.rationale}` : "模型已给出风险解释与建议。";
+        riskSummary.innerHTML = `
+          <h3>预判结果 <span class="${riskTagClass}">${data.risk_label} · ${data.risk_score}</span></h3>
+          <p>${data.proactive_event || "模型已触发主动预测。"}</p>
+          <p style="margin-top:6px;">${rationaleText}</p>
+        `;
+
+        actionPanel.innerHTML = `
+          <h3>主动触达 <span class="${riskTagClass}">${data.decision}</span></h3>
+          <p>置信度 ${Number(data.confidence).toFixed(2)} · ${data.trace?.[0] || "触达策略由模型动态生成"}</p>
+        `;
+
+        suggestionList.innerHTML = (data.suggestions || []).slice(0, 3).map(text => `
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <p>${text}</p>
+          </div>
+        `).join("");
+
+        if (data.proactive_event) {
+          proactiveFeed.innerHTML = `
+            <h3>主动触发窗口 <span class="${riskTagClass}">预测中</span></h3>
+            <p>${data.proactive_event}</p>
+          `;
+        } else {
+          updateProactiveFeed(data.risk_score || 50);
+        }
+        updateModelStatus(Number(data.risk_score || 50), Number(data.confidence || 0.75), data.decision || "事前提醒");
+
+        if (Array.isArray(data.explain_weights)) {
+          weightPanel.innerHTML = data.explain_weights.map(w => {
+            const percent = Math.round(Number(w.weight || 0) * 100);
+            return `
+              <div class="bar-row">
+                <span>${w.key}</span>
+                <div class="bar"><span style="width:${percent}%"></span></div>
+                <span>${percent}%</span>
+              </div>
+            `;
+          }).join("");
+        }
+
+        if (Array.isArray(data.memory_alignment)) {
+          memoryAlign.innerHTML = data.memory_alignment.slice(0, 3).map(item => `
+            <div class="align-row">
+              <span>${item}</span>
+              <span class="align-dot"></span>
+            </div>
+          `).join("");
+        }
+
+        if (Array.isArray(data.trace)) {
+          data.trace.slice(0, 3).forEach(item => appendStream(traceList, `<strong>决策</strong> · ${item}`));
+        }
+
+        if (triggeredByAuto) {
+          lastScan.textContent = `上次巡检：${formatTime(new Date())} · LLM`;
+        }
+
+      } catch (err) {
+        appendStream(traceList, `<strong>LLM</strong> · 调用失败：${err.message}`);
+      } finally {
+        btnAi.disabled = false;
+        btnAi.textContent = "调用 LLM 评估";
+      }
+    }
+
+    sensitivityRow.addEventListener("click", (e) => {
+      if (e.target.classList.contains("pill")) {
+        toggleActive(sensitivityRow, e.target);
+        updateUI();
+      }
+    });
+
+    signalRow.addEventListener("click", (e) => {
+      if (e.target.classList.contains("pill")) {
+        toggleActive(signalRow, e.target);
+        updateUI();
+      }
+    });
+
+    consentRow.addEventListener("click", (e) => {
+      if (e.target.classList.contains("pill")) {
+        toggleActive(consentRow, e.target);
+        updateUI();
+      }
+    });
+
+    sceneType.addEventListener("change", () => {
+      const preset = scenarioPresets[sceneType.value];
+      if (!preset) return;
+      contextInput.value = preset.context;
+      sensitivityRow.querySelectorAll(".pill").forEach(p => {
+        p.classList.toggle("active", p.dataset.value === preset.sensitivity);
+      });
+      signalRow.querySelectorAll(".pill").forEach(p => {
+        p.classList.toggle("active", preset.signals.includes(p.dataset.value));
+      });
+      updateUI();
+    });
+
+    interruptLevel.addEventListener("input", () => updateUI(false));
+    contextInput.addEventListener("input", () => updateUI(false));
+
+    btnRun.addEventListener("click", () => {
+      if (engineMode === "llm") {
+        runAiAssessment(false);
+      } else {
+        updateUI(false);
+      }
+    });
+    btnAi.addEventListener("click", () => runAiAssessment(false));
+    btnReset.addEventListener("click", () => {
+      sceneType.value = "email";
+      contextInput.value = scenarioPresets.email.context;
+      interruptLevel.value = 3;
+      sensitivityRow.querySelectorAll(".pill").forEach(p => {
+        p.classList.toggle("active", p.dataset.value === "medium");
+      });
+      signalRow.querySelectorAll(".pill").forEach(p => {
+        p.classList.toggle("active", ["external", "finance"].includes(p.dataset.value));
+      });
+      consentRow.querySelectorAll(".pill").forEach(p => {
+        p.classList.toggle("active", p.dataset.value === "auto");
+      });
+      updateUI();
+    });
+
+    let autoTimer = null;
+    let signalTimer = null;
+    function startAutoScan() {
+      if (autoTimer) return;
+      autoTimer = setInterval(() => {
+        if (engineMode === "llm") {
+          runAiAssessment(true);
+        } else {
+          updateUI(true);
+        }
+      }, 6000);
+      signalTimer = setInterval(tickLiveSignals, 3500);
+      if (engineMode === "llm") {
+        runAiAssessment(true);
+      } else {
+        updateUI(true);
+      }
+      tickLiveSignals();
+      tickTrace("事前提醒");
+    }
+
+    function stopAutoScan() {
+      if (!autoTimer) return;
+      clearInterval(autoTimer);
+      clearInterval(signalTimer);
+      autoTimer = null;
+      signalTimer = null;
+      lastScan.textContent = "上次巡检：已暂停";
+    }
+
+    autoCheck.addEventListener("change", () => {
+      if (autoCheck.checked) {
+        startAutoScan();
+      } else {
+        stopAutoScan();
+      }
+    });
+
+    engineRow.addEventListener("click", (e) => {
+      if (!e.target.classList.contains("pill")) return;
+      engineRow.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+      e.target.classList.add("active");
+      engineMode = e.target.dataset.value;
+      appendStream(traceList, `<strong>模式</strong> · 切换为 ${engineMode === "llm" ? "LLM 驱动" : "规则模拟"}`);
+      if (engineMode === "llm") {
+        runAiAssessment(false);
+      } else {
+        updateUI(false);
+      }
+    });
+
+    startAutoScan();
+  </script>
+</body>
+</html>
